@@ -1,16 +1,22 @@
+#include <iostream>
+#include <string>
+#include <cstring>
+
 struct command_line
 {
     std::string patch_file;
     std::string process_name;
     unsigned int process_id;
+    std::string executable_path; // New member for executable path
     bool revert;
     bool force;
 
-    bool parse(int argc, char *argv[])
+    bool parse(int argc, char* argv[])
     {
         patch_file = std::string();
         process_name = std::string();
         process_id = 0;
+        executable_path = std::string(); // Initialize executable path
         revert = false;
         force = false;
 
@@ -21,6 +27,13 @@ struct command_line
         {
             if (i == 1)
                 patch_file = std::string(argv[i]);
+            else if (strcmpi(argv[i], "-f") == 0) // Check for -f argument
+            {
+                i++;
+                if (i >= argc)
+                    return false;
+                executable_path = std::string(argv[i]);
+            }
             else if (i == 2)
             {
                 if (strcmpi(argv[i], "-pid") != 0 && strcmpi(argv[i], "-p") != 0)
@@ -61,4 +74,5 @@ void print_usage()
     std::cout << "Allowed options:" << std::endl;
     std::cout << "  -revert: revert previously applied patches" << std::endl;
     std::cout << "  -force:  apply/revert patches even if patch locations contain unexpected data" << std::endl;
+    std::cout << "  -f:       path to the executable file" << std::endl; // Update usage info
 }
